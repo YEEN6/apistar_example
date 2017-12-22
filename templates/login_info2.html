@@ -1,0 +1,10 @@
+<html>
+    <body>
+    <h1> {{ jwt }} </h1> 
+	<form action="/user_info" method="get" >
+	<input type="hidden" name="jwt_data" value="{{ jwt }}" />
+	<input type="submit" value="go" />
+	</form>
+    <h1> {{ user_info }} </h1> 
+    </body>
+</html> 
