@@ -1,6 +1,7 @@
-from apistar import Include, Route
+from apistar import Include, Route, annotate, render_template, Response, http
 from apistar.frameworks.wsgi import WSGIApp as App
 from apistar.handlers import docs_urls, static_urls
+from apistar.renderers import HTMLRenderer
 import json
 import jwt
 import logging
@@ -13,7 +14,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-
+#set static datas
 data = {
     'user_a' : {'pw' : '1111', 'info' : {'id' : 'user_a', 'age' : '20', 'gender' : 'man', 'address' : 'Seoul'}},
     'user_b' : {'pw' : '2222', 'info' : {'id' : 'user_b', 'age' : '25', 'gender' : 'woman', 'address' : 'Busan'}},
@@ -37,6 +38,11 @@ def get_info(token):
     info = jwt.decode(token, 'something', algorithms=['HS256'])
     return info
 
+@annotate(renderers=[HTMLRenderer()])
+
+def login(username: str):
+    return render_template('index.html', username=username)
+
 
 def welcome(id=None, pw=None):
     if id is None:
@@ -45,7 +51,6 @@ def welcome(id=None, pw=None):
         jwt = encode(id)
         logging.info(jwt)
         return jwt.decode("utf-8")
-     
     else:
         return 'Login Fail'
 
@@ -57,12 +62,21 @@ def auth_jwt(token=None):
 
 routes = [
     Route('/', 'GET', welcome),
+    Route('/login', 'GET', login),
     Route('/jwt', 'GET', auth_jwt),
     Include('/docs', docs_urls),
     Include('/static', static_urls)
 ]
 
-app = App(routes=routes)
+settings = {
+    'TEMPLATES': {
+        'ROOT_DIR': 'templates',	# include the 'tmeplates/'directory.
+        'PACKAGE_DIRS': ['apistar']	# include the built-in apistar templates.
+        }
+    }
+
+
+app = App(routes=routes, settings=settings)
 
 
 if __name__ == '__main__':
