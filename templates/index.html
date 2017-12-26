@@ -1,15 +1,45 @@
 <html>
-    <body>
-    <h1>Hello, {{ username }} </h1> 
-         <form action="login_info" method="get">
-  <fieldset>
-    <legend>Personal information:</legend>
-    ID:<br>
-    <input type="text" name="id" value="Input your id."><br>
-    PW:<br>
-    <input type="text" name="pw" value="Input yout password."><br><br>
-    <input type="submit" value="Submit">
-  </fieldset>
-</form> 
-    </body>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+$('#submit').click(function() {
+	var id = $("#id").val();
+	var pw = $("#pw").val();
+	//alert(id);
+	//alert(pw);	
+	$.ajax({
+		type:"POST",
+		dataType:"json",
+		contentType: "application/json; charset=utf-8",
+		cache:false,
+		url:"/login_info",
+		data: JSON.stringify({ id: id, pw: pw }),
+		success: function() {
+			$("#jwt_string").text('jwt');
+		}
+	});
+});
+});
+
+</script>
+</head>
+
+<body>
+<h1>Hello, {{ username }} </h1> 
+<fieldset>
+   	<legend>Personal information:</legend>
+   	ID:<br>
+   	<input type="text" name="id" id="id"><br>
+   	PW:<br>
+   	<input type="text" name="pw" id="pw"><br><br>
+   	<button type="button" id="submit">Submit</button>
+</fieldset>
+
+<dir>
+	<textarea name="jwt" id="jwt_string" form="usrform">jwt string will be generate here.</textarea>
+</dir>
+
+</body>
 </html> 

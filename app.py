@@ -43,15 +43,25 @@ def get_info(token):
 def login(username: str):
 	return render_template('index.html', username=username)
 
+
 @annotate(renderers=[HTMLRenderer()])
 
-def login_info(id=None, pw=None):
-	logging.info('hi')
-	logging.info('%s,%s'%(id,pw))
-	jwt_data = encode(id)
-	logging.info(jwt_data)
-	return render_template('login_info2.html', jwt=jwt_data.decode('utf-8'))
-	#return render_template('login_info.html')
+def login_info(request: http.Body):
+	#this data's type is byte	
+	logging.info(request)
+
+	#convert byte type to json string
+	temp = request.decode('utf-8').replace("'", '"')
+	data = json.dumps(temp, indent=4, sort_keys=True)
+	user_info = json.loads(temp)
+	
+	id = user_info['id']
+	pw = user_info['pw']
+
+	if auth(id, pw):
+		jwt_data = encode(id)
+		logging.info(jwt_data)
+		return render_template('login_info2.html', jwt=jwt_data.decode('utf-8'))
 
 def welcome(id=None, pw=None):
 	if id is None:
@@ -80,7 +90,7 @@ def user_info(jwt_data=None):
 routes = [
 	Route('/', 'GET', welcome),
 	Route('/login', 'GET', login),
-	Route('/login_info', 'GET', login_info),
+	Route('/login_info', 'POST', login_info),
 	Route('/user_info' , 'GET', user_info),
 	Route('/jwt', 'GET', auth_jwt),
 	Include('/docs', docs_urls),
