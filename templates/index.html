@@ -3,6 +3,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
 
+//The important part is “EnableSession = true”
+[WebMethod(EnableSession = true)]
+public string GetSessionValue(String Name){
+    string sessionVal = String.Empty;
+    if (Session != null &amp;&amp; Session[Name] != null){
+        sessionVal = Session[Name].ToString();
+    }
+    return sessionVal;
+}
+
+
 $(document).ready(function() {
 $('#submit').click(function() {
 	var id = $("#id").val();
@@ -17,9 +28,10 @@ $('#submit').click(function() {
 		url:"/login_info",
 		data: JSON.stringify({ id: id, pw: pw }),
 		success: function() {
-			$("#jwt_string").text('jwt');
+			$('#jwt_string').text(GetSeesionValue('jwt_data'))
 		}
 	});
+	return false;
 });
 });
 

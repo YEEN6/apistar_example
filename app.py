@@ -5,6 +5,7 @@ from apistar.renderers import HTMLRenderer
 import json
 import jwt
 import logging
+import requests
 
 
 #show the log
@@ -46,7 +47,7 @@ def login(username: str):
 
 @annotate(renderers=[HTMLRenderer()])
 
-def login_info(request: http.Body):
+def login_info(request: http.Body, session: http.Session):
 	#this data's type is byte	
 	logging.info(request)
 
@@ -61,7 +62,12 @@ def login_info(request: http.Body):
 	if auth(id, pw):
 		jwt_data = encode(id)
 		logging.info(jwt_data)
-		return render_template('login_info2.html', jwt=jwt_data.decode('utf-8'))
+		#return render_template('login_info2.html', jwt=jwt_data.decode('utf-8'))
+		session['jwt_data'] = jwt_data
+		logging.info(session['jwt_data'])
+		print('save complete')
+		return Response(status=200, headers={'location': '/login'})
+	return false 
 
 def welcome(id=None, pw=None):
 	if id is None:
